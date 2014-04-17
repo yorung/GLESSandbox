@@ -15,6 +15,7 @@ import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
+import android.util.Log;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -61,8 +62,8 @@ public class MyView extends GLSurfaceView {
 
 	private static final float triangleCoords[] = {
 		0.0f,  0.5f,
-		-0.8f, -0.6f,
-		0.8f, -0.6f,
+		-1.2f, -0.5f,
+		1.2f, -0.5f,
 	};
 
 	private class MyRenderer implements GLSurfaceView.Renderer {
@@ -86,7 +87,14 @@ public class MyView extends GLSurfaceView {
 		private int compileShader(int type, String fileName) {
 			int shader = GLES20.glCreateShader(type);
 			GLES20.glShaderSource(shader, view.load(fileName));
+			int result[] = new int[1];
 			GLES20.glCompileShader(shader);
+			GLES20.glGetShaderiv(shader, GLES20.GL_COMPILE_STATUS, result, 0);
+			if (result[0] == 0) {
+				String errStr = GLES20.glGetShaderInfoLog(shader);
+				String errStr2 = String.format("result=%d log=%s", result[0], errStr);
+				Log.e("MyView", errStr2);
+			}
 			return shader;
 		}
 
@@ -105,11 +113,15 @@ public class MyView extends GLSurfaceView {
 			view.loadTexture("autumn.jpg");
 		}
 
+		int frame = 0;
 		public void onDrawFrame(GL10 unused) {
+			frame++;
+
 			GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 			GLES20.glUseProgram(mProgram);
 			GLES20.glUniform1i(GLES20.glGetUniformLocation(mProgram, "sampler1"), 0);
 			GLES20.glUniform1i(GLES20.glGetUniformLocation(mProgram, "sampler2"), 1);
+			GLES20.glUniform1f(GLES20.glGetUniformLocation(mProgram, "time"), (float)frame / 60.0f);
 			int mPositionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
 			GLES20.glEnableVertexAttribArray(mPositionHandle);
 			GLES20.glVertexAttribPointer(mPositionHandle, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, vertexStride, vertexBuffer);
