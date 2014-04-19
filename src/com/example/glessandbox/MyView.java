@@ -61,9 +61,10 @@ public class MyView extends GLSurfaceView {
 	}
 
 	private static final float triangleCoords[] = {
-		0.0f,  0.5f,
-		-1.2f, -0.5f,
-		1.2f, -0.5f,
+		-1, -1,
+		1, -1,
+		-1, 1,
+		1, 1,
 	};
 
 	private class MyRenderer implements GLSurfaceView.Renderer {
@@ -125,7 +126,7 @@ public class MyView extends GLSurfaceView {
 			int mPositionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
 			GLES20.glEnableVertexAttribArray(mPositionHandle);
 			GLES20.glVertexAttribPointer(mPositionHandle, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, vertexStride, vertexBuffer);
-			GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
+			GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, vertexCount);
 			GLES20.glDisableVertexAttribArray(mPositionHandle);
 		}
 
