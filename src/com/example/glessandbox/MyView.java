@@ -99,14 +99,21 @@ public class MyView extends GLSurfaceView {
 			return shader;
 		}
 
+		private int createProgram(String name) {
+			int vertexShader = compileShader(GLES20.GL_VERTEX_SHADER, "shaders/" + name + ".vs");
+			int fragmentShader = compileShader(GLES20.GL_FRAGMENT_SHADER, "shaders/" + name + ".fs");
+			int program = GLES20.glCreateProgram();
+			GLES20.glAttachShader(program, vertexShader);
+			GLES20.glAttachShader(program, fragmentShader);
+			GLES20.glLinkProgram(program);
+			return program;
+		}
+
 		public void onSurfaceCreated(GL10 unused, EGLConfig config) {
 			GLES20.glClearColor(0, 0, 0, 1);
-			int vertexShader = compileShader(GLES20.GL_VERTEX_SHADER, "vs.vs");
-			int fragmentShader = compileShader(GLES20.GL_FRAGMENT_SHADER, "fs.fs");
-			mProgram = GLES20.glCreateProgram();
-			GLES20.glAttachShader(mProgram, vertexShader);
-			GLES20.glAttachShader(mProgram, fragmentShader);
-			GLES20.glLinkProgram(mProgram);
+
+//			mProgram = createProgram("water");
+			mProgram = createProgram("vivid");
 
 			GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 			view.loadTexture("rose.jpg");
