@@ -121,24 +121,18 @@ public class MyView extends GLSurfaceView {
 			view.loadTexture("autumn.jpg");
 		}
 
-		int frame = 0;
 		public void onDrawFrame(GL10 unused) {
-			frame++;
+			GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
 			int mProgram = programs[0];
+			NDKSandbox.update(mProgram);
 
-			GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-			GLES20.glUseProgram(mProgram);
-			GLES20.glUniform1i(GLES20.glGetUniformLocation(mProgram, "sampler1"), 0);
-			GLES20.glUniform1i(GLES20.glGetUniformLocation(mProgram, "sampler2"), 1);
-			GLES20.glUniform1f(GLES20.glGetUniformLocation(mProgram, "time"), (float)frame / 60.0f);
 			int mPositionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
 			GLES20.glEnableVertexAttribArray(mPositionHandle);
 			GLES20.glVertexAttribPointer(mPositionHandle, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, vertexStride, vertexBuffer);
 			GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, vertexCount);
 			GLES20.glDisableVertexAttribArray(mPositionHandle);
 
-			NDKSandbox.update();
 		}
 
 		public void onSurfaceChanged(GL10 unused, int width, int height) {

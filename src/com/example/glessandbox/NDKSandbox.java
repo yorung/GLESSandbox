@@ -4,5 +4,5 @@ public class NDKSandbox {
 	static {
 		System.loadLibrary("NDKSandbox");
 	}
-	public static native void update();
+	public static native void update(int program);
 }
