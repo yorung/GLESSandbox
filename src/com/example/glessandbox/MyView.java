@@ -4,9 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
 
 import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
@@ -60,29 +57,12 @@ public class MyView extends GLSurfaceView {
 		return tex[0];
 	}
 
-	private static final float triangleCoords[] = {
-		-1, -1,
-		1, -1,
-		-1, 1,
-		1, 1,
-	};
-
 	private class MyRenderer implements GLSurfaceView.Renderer {
 		private MyView view;
 		private int programs[] = new int[2];
-		private FloatBuffer vertexBuffer;
-
-		private static final int COORDS_PER_VERTEX = 2;
-		private final int vertexCount = triangleCoords.length / COORDS_PER_VERTEX;
-		private final int vertexStride = COORDS_PER_VERTEX * 4;
 
 		public MyRenderer(MyView v) {
 			view = v;
-			ByteBuffer bb = ByteBuffer.allocateDirect(triangleCoords.length * 4);
-			bb.order(ByteOrder.nativeOrder());
-			vertexBuffer = bb.asFloatBuffer();
-			vertexBuffer.put(triangleCoords);
-			vertexBuffer.position(0);
 		}
 
 		private int compileShader(int type, String fileName) {
@@ -122,17 +102,8 @@ public class MyView extends GLSurfaceView {
 		}
 
 		public void onDrawFrame(GL10 unused) {
-			GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-
 			int mProgram = programs[0];
 			NDKSandbox.update(mProgram);
-
-			int mPositionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
-			GLES20.glEnableVertexAttribArray(mPositionHandle);
-			GLES20.glVertexAttribPointer(mPositionHandle, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, vertexStride, vertexBuffer);
-			GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, vertexCount);
-			GLES20.glDisableVertexAttribArray(mPositionHandle);
-
 		}
 
 		public void onSurfaceChanged(GL10 unused, int width, int height) {
