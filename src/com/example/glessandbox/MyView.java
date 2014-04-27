@@ -18,6 +18,10 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 public class MyView extends GLSurfaceView {
+	public static int createProgram2() {
+		return 0;
+	}
+	
 	public MyView(Context context) {
 		super(context);
 		setEGLContextClientVersion(2);

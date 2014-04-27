@@ -7,6 +7,7 @@
 #define dimof(x) (sizeof(x) / sizeof(x[0]))
 
 GLuint vbo;
+GLuint gProgram;
 
 static const float coords[] = {
 	-1, -1,
@@ -39,6 +40,17 @@ JNIEXPORT void JNICALL Java_com_example_glessandbox_NDKSandbox_update(JNIEnv* en
 		init();
 	}
 	frame++;
+
+	if (frame == 100) {
+		jclass myview = env->FindClass("com.example.glessandbox.MyView");
+//		jmethodID method = env->GetMethodID(myview, "createProgram2", "(Ljava/lang/String;)I");
+		jmethodID method = env->GetStaticMethodID(myview, "createProgram2", "()I");
+		if (method == 0) {
+			return;
+		}
+		int ret = env->CallStaticIntMethod(myview, method);
+//		int ret = env->CallIntMethod(myview, method, env->NewStringUTF("water"));
+	}
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
