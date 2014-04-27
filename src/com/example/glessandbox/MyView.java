@@ -92,6 +92,8 @@ public class MyView extends GLSurfaceView {
 			MyView.loadTexture("rose.jpg");
 			GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
 			MyView.loadTexture("autumn.jpg");
+
+			NDKSandbox.init();
 		}
 
 		public void onDrawFrame(GL10 unused) {

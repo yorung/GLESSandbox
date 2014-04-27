@@ -20,31 +20,25 @@ static const int COORDS_PER_VERTEX = 2;
 static const int vertexCount = dimof(coords) / COORDS_PER_VERTEX;
 static const int vertexStride = COORDS_PER_VERTEX * 4;
 
-static void init()
+extern "C" {
+
+JNIEXPORT void JNICALL Java_com_example_glessandbox_NDKSandbox_init(JNIEnv* env, jobject obj)
 {
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(coords), coords, GL_STATIC_DRAW);
 
-	std::vector<int> vec;
-	vec.push_back(1);
-	vec.push_back(2);
+	jclass myview = env->FindClass("com.example.glessandbox.MyView");
+	jmethodID method = env->GetStaticMethodID(myview, "createProgram", "(Ljava/lang/String;)I");
+	if (method == 0) {
+		return;
+	}
+	gProgram = env->CallStaticIntMethod(myview, method, env->NewStringUTF("water"));
 }
-
-extern "C" {
 
 JNIEXPORT void JNICALL Java_com_example_glessandbox_NDKSandbox_update(JNIEnv* env, jobject obj)
 {
 	static int frame;
-	if (frame == 0) {
-		init();
-		jclass myview = env->FindClass("com.example.glessandbox.MyView");
-		jmethodID method = env->GetStaticMethodID(myview, "createProgram", "(Ljava/lang/String;)I");
-		if (method == 0) {
-			return;
-		}
-		gProgram = env->CallStaticIntMethod(myview, method, env->NewStringUTF("water"));
-	}
 	frame++;
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
