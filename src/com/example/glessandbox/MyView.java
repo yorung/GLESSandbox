@@ -20,10 +20,6 @@ import javax.microedition.khronos.opengles.GL10;
 public class MyView extends GLSurfaceView {
 	static Context context;
 
-	public static int createProgram2() {
-		return 0;
-	}
-	
 	public MyView(Context c) {
 		super(c);
 		context = c;
@@ -89,13 +85,8 @@ public class MyView extends GLSurfaceView {
 	}
 
 	private class MyRenderer implements GLSurfaceView.Renderer {
-		private int programs[] = new int[2];
-
 		public void onSurfaceCreated(GL10 unused, EGLConfig config) {
 			GLES20.glClearColor(0, 0, 0, 1);
-
-			programs[0] = createProgram("water");
-			programs[1] = createProgram("vivid");
 
 			GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 			MyView.loadTexture("rose.jpg");
@@ -104,8 +95,7 @@ public class MyView extends GLSurfaceView {
 		}
 
 		public void onDrawFrame(GL10 unused) {
-			int mProgram = programs[0];
-			NDKSandbox.update(mProgram);
+			NDKSandbox.update();
 		}
 
 		public void onSurfaceChanged(GL10 unused, int width, int height) {

@@ -33,35 +33,30 @@ static void init()
 
 extern "C" {
 
-JNIEXPORT void JNICALL Java_com_example_glessandbox_NDKSandbox_update(JNIEnv* env, jobject obj, jint program)
+JNIEXPORT void JNICALL Java_com_example_glessandbox_NDKSandbox_update(JNIEnv* env, jobject obj)
 {
 	static int frame;
 	if (frame == 0) {
 		init();
-	}
-	frame++;
-
-	if (frame == 100) {
 		jclass myview = env->FindClass("com.example.glessandbox.MyView");
-//		jmethodID method = env->GetMethodID(myview, "createProgram2", "(Ljava/lang/String;)I");
-		jmethodID method = env->GetStaticMethodID(myview, "createProgram2", "()I");
+		jmethodID method = env->GetStaticMethodID(myview, "createProgram", "(Ljava/lang/String;)I");
 		if (method == 0) {
 			return;
 		}
-		int ret = env->CallStaticIntMethod(myview, method);
-//		int ret = env->CallIntMethod(myview, method, env->NewStringUTF("water"));
+		gProgram = env->CallStaticIntMethod(myview, method, env->NewStringUTF("water"));
 	}
+	frame++;
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glUseProgram(program);
-	glUniform1i(glGetUniformLocation(program, "sampler1"), 0);
-	glUniform1i(glGetUniformLocation(program, "sampler2"), 1);
-	glUniform1f(glGetUniformLocation(program, "time"), (float)frame / 60.0f);
+	glUseProgram(gProgram);
+	glUniform1i(glGetUniformLocation(gProgram, "sampler1"), 0);
+	glUniform1i(glGetUniformLocation(gProgram, "sampler2"), 1);
+	glUniform1f(glGetUniformLocation(gProgram, "time"), (float)frame / 60.0f);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-	int mPositionHandle = glGetAttribLocation(program, "vPosition");
+	int mPositionHandle = glGetAttribLocation(gProgram, "vPosition");
 	glEnableVertexAttribArray(mPositionHandle);
 	glVertexAttribPointer(mPositionHandle, COORDS_PER_VERTEX, GL_FLOAT, GL_FALSE, vertexStride, (void*)0);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, vertexCount);
