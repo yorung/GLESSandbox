@@ -18,18 +18,21 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 public class MyView extends GLSurfaceView {
+	static Context context;
+
 	public static int createProgram2() {
 		return 0;
 	}
 	
-	public MyView(Context context) {
-		super(context);
+	public MyView(Context c) {
+		super(c);
+		context = c;
 		setEGLContextClientVersion(2);
-		setRenderer(new MyRenderer(this));
+		setRenderer(new MyRenderer());
 	}
 
-	public String load(String fileName) {
-		AssetManager assetManager = getResources().getAssets();
+	public static String load(String fileName) {
+		AssetManager assetManager = context.getAssets();
 		StringBuilder sb = new StringBuilder();
 		try {
 			InputStream is = assetManager.open(fileName);
@@ -44,10 +47,10 @@ public class MyView extends GLSurfaceView {
 		return sb.toString();
 	}
 
-	public int loadTexture(String s){
+	public static int loadTexture(String s){
 		Bitmap img;
 		try {
-			img = BitmapFactory.decodeStream(getContext().getAssets().open(s));
+			img = BitmapFactory.decodeStream(context.getAssets().open(s));
 		} catch (IOException e) {
 			return -1;
 		}
@@ -61,37 +64,32 @@ public class MyView extends GLSurfaceView {
 		return tex[0];
 	}
 
+	public static int compileShader(int type, String fileName) {
+		int shader = GLES20.glCreateShader(type);
+		GLES20.glShaderSource(shader, MyView.load(fileName));
+		int result[] = new int[1];
+		GLES20.glCompileShader(shader);
+		GLES20.glGetShaderiv(shader, GLES20.GL_COMPILE_STATUS, result, 0);
+		if (result[0] == 0) {
+			String errStr = GLES20.glGetShaderInfoLog(shader);
+			String errStr2 = String.format("result=%d log=%s", result[0], errStr);
+			Log.e("MyView", errStr2);
+		}
+		return shader;
+	}
+
+	public static int createProgram(String name) {
+		int vertexShader = compileShader(GLES20.GL_VERTEX_SHADER, "shaders/" + name + ".vs");
+		int fragmentShader = compileShader(GLES20.GL_FRAGMENT_SHADER, "shaders/" + name + ".fs");
+		int program = GLES20.glCreateProgram();
+		GLES20.glAttachShader(program, vertexShader);
+		GLES20.glAttachShader(program, fragmentShader);
+		GLES20.glLinkProgram(program);
+		return program;
+	}
+
 	private class MyRenderer implements GLSurfaceView.Renderer {
-		private MyView view;
 		private int programs[] = new int[2];
-
-		public MyRenderer(MyView v) {
-			view = v;
-		}
-
-		private int compileShader(int type, String fileName) {
-			int shader = GLES20.glCreateShader(type);
-			GLES20.glShaderSource(shader, view.load(fileName));
-			int result[] = new int[1];
-			GLES20.glCompileShader(shader);
-			GLES20.glGetShaderiv(shader, GLES20.GL_COMPILE_STATUS, result, 0);
-			if (result[0] == 0) {
-				String errStr = GLES20.glGetShaderInfoLog(shader);
-				String errStr2 = String.format("result=%d log=%s", result[0], errStr);
-				Log.e("MyView", errStr2);
-			}
-			return shader;
-		}
-
-		private int createProgram(String name) {
-			int vertexShader = compileShader(GLES20.GL_VERTEX_SHADER, "shaders/" + name + ".vs");
-			int fragmentShader = compileShader(GLES20.GL_FRAGMENT_SHADER, "shaders/" + name + ".fs");
-			int program = GLES20.glCreateProgram();
-			GLES20.glAttachShader(program, vertexShader);
-			GLES20.glAttachShader(program, fragmentShader);
-			GLES20.glLinkProgram(program);
-			return program;
-		}
 
 		public void onSurfaceCreated(GL10 unused, EGLConfig config) {
 			GLES20.glClearColor(0, 0, 0, 1);
@@ -100,9 +98,9 @@ public class MyView extends GLSurfaceView {
 			programs[1] = createProgram("vivid");
 
 			GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-			view.loadTexture("rose.jpg");
+			MyView.loadTexture("rose.jpg");
 			GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
-			view.loadTexture("autumn.jpg");
+			MyView.loadTexture("autumn.jpg");
 		}
 
 		public void onDrawFrame(GL10 unused) {
