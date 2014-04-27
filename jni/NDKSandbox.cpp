@@ -2,6 +2,8 @@
 #include <gles2/gl2.h>
 #include <gles2/gl2ext.h>
 
+#include <vector>
+
 #define dimof(x) (sizeof(x) / sizeof(x[0]))
 
 GLuint vbo;
@@ -22,6 +24,10 @@ static void init()
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(coords), coords, GL_STATIC_DRAW);
+
+	std::vector<int> vec;
+	vec.push_back(1);
+	vec.push_back(2);
 }
 
 extern "C" {
