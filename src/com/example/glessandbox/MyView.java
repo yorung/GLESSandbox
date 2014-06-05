@@ -86,13 +86,6 @@ public class MyView extends GLSurfaceView {
 
 	private class MyRenderer implements GLSurfaceView.Renderer {
 		public void onSurfaceCreated(GL10 unused, EGLConfig config) {
-			GLES20.glClearColor(0, 0, 0, 1);
-
-			GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-			MyView.loadTexture("rose.jpg");
-			GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
-			MyView.loadTexture("autumn.jpg");
-
 			NDKSandbox.init();
 		}
 

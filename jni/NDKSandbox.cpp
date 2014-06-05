@@ -24,6 +24,8 @@ extern "C" {
 
 JNIEXPORT void JNICALL Java_com_example_glessandbox_NDKSandbox_init(JNIEnv* env, jobject obj)
 {
+	glClearColor(0, 0, 0, 1);
+
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(coords), coords, GL_STATIC_DRAW);
@@ -34,6 +36,12 @@ JNIEXPORT void JNICALL Java_com_example_glessandbox_NDKSandbox_init(JNIEnv* env,
 		return;
 	}
 	gProgram = env->CallStaticIntMethod(myview, method, env->NewStringUTF("water"));
+
+	method = env->GetStaticMethodID(myview, "loadTexture", "(Ljava/lang/String;)I");
+	glActiveTexture(GL_TEXTURE0);
+	env->CallStaticIntMethod(myview, method, env->NewStringUTF("rose.jpg"));
+	glActiveTexture(GL_TEXTURE1);
+	env->CallStaticIntMethod(myview, method, env->NewStringUTF("autumn.jpg"));
 }
 
 JNIEXPORT void JNICALL Java_com_example_glessandbox_NDKSandbox_update(JNIEnv* env, jobject obj)
