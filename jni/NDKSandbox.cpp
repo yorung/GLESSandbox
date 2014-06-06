@@ -21,6 +21,27 @@ static const Vert vert[] = {
 	{1, 1},
 };
 
+struct VertDecl {
+	const char* name;
+	GLint size;
+	GLsizei stride;
+	int offset;
+};
+
+static const VertDecl decl[] = {
+	{ "vPosition", 2, sizeof(Vert), 0 },
+};
+
+static void Decl(const VertDecl decl[], int nDecl)
+{
+	for (int i = 0; i < nDecl; i++) {
+		const VertDecl& d = decl[i];
+		int h = glGetAttribLocation(gProgram, d.name);
+		glEnableVertexAttribArray(h);
+		glVertexAttribPointer(h, d.size, GL_FLOAT, GL_FALSE, d.stride, (void*)d.offset);
+	}
+}
+
 extern "C" {
 
 JNIEXPORT void JNICALL Java_com_example_glessandbox_NDKSandbox_init(JNIEnv* env, jobject obj)
@@ -59,11 +80,9 @@ JNIEXPORT void JNICALL Java_com_example_glessandbox_NDKSandbox_update(JNIEnv* en
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-	int mPositionHandle = glGetAttribLocation(gProgram, "vPosition");
-	glEnableVertexAttribArray(mPositionHandle);
-	glVertexAttribPointer(mPositionHandle, 2, GL_FLOAT, GL_FALSE, sizeof(Vert), (void*)0);
+	Decl(decl, dimof(decl));
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, dimof(vert));
-	glDisableVertexAttribArray(mPositionHandle);
+//	glDisableVertexAttribArray(mPositionHandle);
 }
 
 }
