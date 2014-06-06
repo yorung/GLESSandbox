@@ -9,16 +9,17 @@
 GLuint vbo;
 GLuint gProgram;
 
-static const float coords[] = {
-	-1, -1,
-	1, -1,
-	-1, 1,
-	1, 1,
+struct Vert {
+	float x;
+	float y;
 };
 
-static const int COORDS_PER_VERTEX = 2;
-static const int vertexCount = dimof(coords) / COORDS_PER_VERTEX;
-static const int vertexStride = COORDS_PER_VERTEX * 4;
+static const Vert vert[] = {
+	{-1, -1},
+	{1, -1},
+	{-1, 1},
+	{1, 1},
+};
 
 extern "C" {
 
@@ -28,7 +29,7 @@ JNIEXPORT void JNICALL Java_com_example_glessandbox_NDKSandbox_init(JNIEnv* env,
 
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(coords), coords, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vert), vert, GL_STATIC_DRAW);
 
 	jclass myview = env->FindClass("com.example.glessandbox.MyView");
 	jmethodID method = env->GetStaticMethodID(myview, "createProgram", "(Ljava/lang/String;)I");
@@ -60,8 +61,8 @@ JNIEXPORT void JNICALL Java_com_example_glessandbox_NDKSandbox_update(JNIEnv* en
 
 	int mPositionHandle = glGetAttribLocation(gProgram, "vPosition");
 	glEnableVertexAttribArray(mPositionHandle);
-	glVertexAttribPointer(mPositionHandle, COORDS_PER_VERTEX, GL_FLOAT, GL_FALSE, vertexStride, (void*)0);
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, vertexCount);
+	glVertexAttribPointer(mPositionHandle, 2, GL_FLOAT, GL_FALSE, sizeof(Vert), (void*)0);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, dimof(vert));
 	glDisableVertexAttribArray(mPositionHandle);
 }
 
